@@ -121,6 +121,45 @@ app.get('/test-albums-tracks', function(req, res) {
   })
 });
 
+app.get('/test-search', function(req, res) {
+  // Make a AXIOS call (POST) to submit CLIENT_ID and CLIENT_SECRET
+
+  axios.post('https://accounts.spotify.com/api/token', 
+      querystring.stringify({ grant_type: 'client_credentials'}),
+     { 
+        headers: headers 
+  })
+  .then(function(response) {                    
+      token = response.data.access_token
+      console.log('TOKEN', token);
+      const config = {
+          headers: {
+              Authorization: `Bearer ${token}`
+          }
+      }
+      let artist = 'Pop Smoke'
+      let track = 'Welcome To The Party';
+
+      // let query = encodeURIComponent(`${artist} ${track}`);
+      // console.log(query); // => Pop Smoke%20Welcome To The Party
+
+      // make another axios (GET) to get the data 
+      axios.get(`https://api.spotify.com/v1/search?q=${artist}&type=artist&offset=0&limit=5`, config)
+      .then(response => {
+          console.log('DATA YAYYYYY!!!', response.data);
+          res.json({ data: response.data });
+          // res.render('whateverpage', { data: response.data });
+      })
+      .catch(err => {
+          console.log('ERROR', err);
+      });
+
+    })
+  .catch(function(err) {
+      console.log("error", err.message)
+  })
+});
+
 const PORT = process.env.PORT || 3000;
 const server = app.listen(PORT, () => {
   console.log(`🎧 You're listening to the smooth sounds of port ${PORT} 🎧`);

@@ -58,7 +58,7 @@ app.use('/auth', require('./controllers/auth'));
 
 
 app.get('/test-albums', function(req, res) {
-
+  // Make a AXIOS call (POST) to submit CLIENT_ID and CLIENT_SECRET
   axios.post('https://accounts.spotify.com/api/token', 
       querystring.stringify({ grant_type: 'client_credentials'}),
      { 
@@ -72,10 +72,10 @@ app.get('/test-albums', function(req, res) {
               Authorization: `Bearer ${token}`
           }
       }
-
+      // make another axios (GET) to get the data 
       axios.get('https://api.spotify.com/v1/albums/4aawyAB9vmqN3uQ7FjRGTy', config)
-      .then(response => {
-          console.log(response.data);
+      .then(function(response){
+          console.log('DATA YAY!', response.data);
           res.json({ data: response.data });
           // res.render('whateverpage', { data: response.data });
       })
@@ -83,8 +83,6 @@ app.get('/test-albums', function(req, res) {
           console.log('ERROR', err);
       });
 
-      // another axios call here for [song] [album] [artist] .....
-      console.log(token);
     })
   .catch(function(err) {
       console.log("error", err.message)
@@ -92,10 +90,11 @@ app.get('/test-albums', function(req, res) {
 });
 
 app.get('/test-albums-tracks', function(req, res) {
+  // Make a AXIOS call (POST) to submit CLIENT_ID and CLIENT_SECRET
   axios.post('https://accounts.spotify.com/api/token', 
       querystring.stringify({ grant_type: 'client_credentials'}),
      { 
-          headers: headers 
+        headers: headers 
   })
   .then(function(response) {                    
       token = response.data.access_token
@@ -105,7 +104,7 @@ app.get('/test-albums-tracks', function(req, res) {
               Authorization: `Bearer ${token}`
           }
       }
-
+      // make another axios (GET) to get the data 
       axios.get('https://api.spotify.com/v1/albums/4aawyAB9vmqN3uQ7FjRGTy/tracks', config)
       .then(response => {
           console.log('DATA YAYYYYY!!!', response.data);

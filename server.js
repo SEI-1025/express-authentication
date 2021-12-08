@@ -10,6 +10,15 @@ const isLoggedIn = require('./middleware/isLoggedIn');
 const SECRET_SESSION = process.env.SECRET_SESSION;
 console.log(SECRET_SESSION);
 
+// code for Spotify API
+const axios = require('axios');
+const querystring = require('querystring');
+let buff = new Buffer.from(`${process.env.CLIENT_ID}:${process.env.CLIENT_SECRET}`);
+let authKey = buff.toString('base64');
+let headers = {
+    Authorization: `Basic ${authKey}`
+}
+
 app.set('view engine', 'ejs');
 
 app.use(require('morgan')('dev'));
@@ -46,6 +55,75 @@ app.get('/profile', isLoggedIn, (req, res) => {
 
 // controllers
 app.use('/auth', require('./controllers/auth'));
+
+
+app.get('/test-albums', function(req, res) {
+
+  axios.post('https://accounts.spotify.com/api/token', 
+      querystring.stringify({ grant_type: 'client_credentials'}),
+     { 
+          headers: headers 
+  })
+  .then(function(response) {                    
+      token = response.data.access_token
+      console.log('TOKEN', token);
+      const config = {
+          headers: {
+              Authorization: `Bearer ${token}`
+          }
+      }
+
+      axios.get('https://api.spotify.com/v1/albums/4aawyAB9vmqN3uQ7FjRGTy', config)
+      .then(response => {
+          console.log(response.data);
+          res.json({ data: response.data });
+          // res.render('whateverpage', { data: response.data });
+      })
+      .catch(err => {
+          console.log('ERROR', err);
+      });
+
+      // another axios call here for [song] [album] [artist] .....
+      console.log(token);
+    })
+  .catch(function(err) {
+      console.log("error", err.message)
+  })
+});
+
+app.get('/test-albums-tracks', function(req, res) {
+
+  axios.post('https://accounts.spotify.com/api/token', 
+      querystring.stringify({ grant_type: 'client_credentials'}),
+     { 
+          headers: headers 
+  })
+  .then(function(response) {                    
+      token = response.data.access_token
+      console.log('TOKEN', token);
+      const config = {
+          headers: {
+              Authorization: `Bearer ${token}`
+          }
+      }
+
+      axios.get('https://api.spotify.com/v1/albums/4aawyAB9vmqN3uQ7FjRGTy/tracks', config)
+      .then(response => {
+          console.log(response.data);
+          res.json({ data: response.data });
+          // res.render('whateverpage', { data: response.data });
+      })
+      .catch(err => {
+          console.log('ERROR', err);
+      });
+
+      // another axios call here for [song] [album] [artist] .....
+      console.log(token);
+    })
+  .catch(function(err) {
+      console.log("error", err.message)
+  })
+});
 
 const PORT = process.env.PORT || 3000;
 const server = app.listen(PORT, () => {

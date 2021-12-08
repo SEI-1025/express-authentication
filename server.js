@@ -92,7 +92,6 @@ app.get('/test-albums', function(req, res) {
 });
 
 app.get('/test-albums-tracks', function(req, res) {
-
   axios.post('https://accounts.spotify.com/api/token', 
       querystring.stringify({ grant_type: 'client_credentials'}),
      { 
@@ -109,7 +108,7 @@ app.get('/test-albums-tracks', function(req, res) {
 
       axios.get('https://api.spotify.com/v1/albums/4aawyAB9vmqN3uQ7FjRGTy/tracks', config)
       .then(response => {
-          console.log(response.data);
+          console.log('DATA YAYYYYY!!!', response.data);
           res.json({ data: response.data });
           // res.render('whateverpage', { data: response.data });
       })
@@ -117,8 +116,6 @@ app.get('/test-albums-tracks', function(req, res) {
           console.log('ERROR', err);
       });
 
-      // another axios call here for [song] [album] [artist] .....
-      console.log(token);
     })
   .catch(function(err) {
       console.log("error", err.message)
